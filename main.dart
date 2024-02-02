@@ -1,5 +1,89 @@
 import 'package:flutter/material.dart';
 
+class CustomExpansionTile extends StatefulWidget {
+  final Widget title;
+  final List<Widget> children;
+
+  const CustomExpansionTile({
+    Key? key,
+    required this.title,
+    required this.children,
+  }) : super(key: key);
+
+  @override
+  _CustomExpansionTileState createState() => _CustomExpansionTileState();
+}
+
+class _CustomExpansionTileState extends State<CustomExpansionTile> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: () {
+            setState(() {
+              _isExpanded = !_isExpanded;
+            });
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              widget.title,
+              Icon(
+                _isExpanded ? Icons.remove : Icons.add,
+                color: Colors.black,
+              ),
+            ],
+          ),
+        ),
+        if (_isExpanded)
+          Padding(
+            padding: const EdgeInsets.only(left: 40.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: widget.children,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+TextStyle _commonTextStyle() {
+  return TextStyle(
+    color: Colors.white,
+    fontSize: 15.0,
+  );
+}
+
+Widget _buildAdditionalDetails(String prerequisites, String overview) {
+  return CustomExpansionTile(
+    title: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Additional Details',
+          style: _commonTextStyle(),
+        ),
+        Icon(Icons.add, color: Colors.white),
+      ],
+    ),
+    children: [
+      Text(
+        '実施形態: $prerequisites',
+        style: _commonTextStyle(), // ここで共通のスタイルを使用
+      ),
+      Text(
+        '単位: $overview',
+        style: _commonTextStyle(), // ここで共通のスタイルを使用
+      ),
+    ],
+  );
+}
+
 void main() {
   runApp(MyApp());
 }
@@ -15,25 +99,21 @@ class MyApp extends StatelessWidget {
         body: SingleChildScrollView(
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, // ここを修正
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Search Bar and Result Count
                 Container(
                   padding: EdgeInsets.all(16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Search Icon
                       Icon(Icons.search),
                       SizedBox(width: 8.0),
-                      // Search Result Count
-                      Text('１０件'),
+                      Text('10件'),
                     ],
                   ),
                 ),
-                // Three Boxes
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -43,7 +123,7 @@ class MyApp extends StatelessWidget {
                       units: '3',
                       professor: 'Dr. Smith',
                       time: '10:00 AM - 11:30 AM',
-                      prerequisites: 'Math101',
+                      prerequisites: 'attendance',
                       overview: 'This course covers advanced topics in mathematics.',
                     ),
                     _buildBox(
@@ -52,7 +132,7 @@ class MyApp extends StatelessWidget {
                       units: '2',
                       professor: 'Prof. Johnson',
                       time: '2:00 PM - 4:00 PM',
-                      prerequisites: 'CS101',
+                      prerequisites: 'attendance',
                       overview: 'Explore practical aspects of computer science.',
                     ),
                     _buildBox(
@@ -61,7 +141,7 @@ class MyApp extends StatelessWidget {
                       units: '4',
                       professor: 'Dr. Williams',
                       time: '1:00 PM - 3:00 PM',
-                      prerequisites: 'History101',
+                      prerequisites: 'attendance',
                       overview: 'In-depth study of historical events.',
                     ),
                   ],
@@ -108,20 +188,15 @@ class MyApp extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 12.0),
-              // Additional details (hidden by default)
               _buildAdditionalDetails(prerequisites, overview),
+              SizedBox(height: 12.0),
+              ElevatedButton(
+                onPressed: () {
+                  print('Syllabus button pressed for $title');
+                },
+                child: Text('Show Syllabus'),
+              ),
             ],
-          ),
-        ),
-        // Syllabus Button
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ElevatedButton(
-            onPressed: () {
-              // Handle syllabus button press
-              print('Syllabus button pressed for $title');
-            },
-            child: Text('Show Syllabus'),
           ),
         ),
       ],
@@ -129,11 +204,20 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _buildAdditionalDetails(String prerequisites, String overview) {
-    return ExpansionTile(
-      title: Text('詳細'),
+    return CustomExpansionTile(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+       
+      ),
       children: [
-        Text('履修条件: $prerequisites'),
-        Text('概要: $overview'),
+        Text(
+          '履修条件: $prerequisites',
+          style: _commonTextStyle(),
+        ),
+        Text(
+          '概要: $overview',
+          style: _commonTextStyle(),
+        ),
       ],
     );
   }
